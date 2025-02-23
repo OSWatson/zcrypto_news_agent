@@ -1,0 +1,10 @@
+requests
+json
+python-dotenv
+langchain
+openai
+textblob
+schedule
+streamlit
+altair
+pandas
