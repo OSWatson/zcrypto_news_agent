@@ -2,22 +2,24 @@ import os
 from dotenv import load_dotenv
 from langchain.agents import initialize_agent, Tool
 from langchain_community.llms import OpenAI
-from langchain.utilities import SerpAPIWrapper
 
-# 1. Load environment variables
+# ✅ Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
 
 def create_web_search_agent():
-    """Creates a LangChain agent with a SerpAPI-based search tool."""
-    # 2. Create an LLM (OpenAI)
-    llm = OpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
+    """Creates a LangChain agent with a SerpAPI-based search tool, only if the API key is available."""
+    
+    if not SERPAPI_API_KEY:
+        print("⚠️ SerpAPI key is missing. Web search will be disabled.")
+        return None  # ✅ Prevents the agent from initializing when there's no API key
 
-    # 3. Create the search tool (SerpAPI)
+    from langchain_community.utilities import SerpAPIWrapper  # ✅ Import only when needed
     search = SerpAPIWrapper(serpapi_api_key=SERPAPI_API_KEY)
 
-    # 4. Wrap the search tool as a LangChain Tool
+    llm = OpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
+    
     tools = [
         Tool(
             name="Search",
@@ -26,11 +28,10 @@ def create_web_search_agent():
         )
     ]
 
-    # 5. Initialize the agent
     agent = initialize_agent(
         tools=tools,
         llm=llm,
-        agent="zero-shot-react-description",  # or "chat-zero-shot-react-description"
+        agent="zero-shot-react-description",
         verbose=True
     )
     return agent
@@ -38,10 +39,13 @@ def create_web_search_agent():
 def ask_web_search_agent(query: str) -> str:
     """Asks the web search agent a question, returning a string answer."""
     agent = create_web_search_agent()
+    
+    if agent is None:
+        return "Web search is disabled because SerpAPI key is missing."
+    
     return agent.run(query)
 
 if __name__ == "__main__":
-    # Example usage
     question = "What are the latest cryptocurrency news headlines?"
     response = ask_web_search_agent(question)
     print("Agent's answer:\n", response)

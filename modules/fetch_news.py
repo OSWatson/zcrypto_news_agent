@@ -29,7 +29,12 @@ def fetch_news():
             return []
 
         articles = [
-            {"title": a.get("title", "No title"), "content": a.get("description", "No content"), "url": a.get("url", "#")}
+            {
+                "title": a.get("title", "No title"),
+                "content": a.get("description", "No content"),
+                "url": a.get("url", "#"),
+                "published_at": a.get("publishedAt", None)  # ✅ Include the article's published date
+            }
             for a in data["articles"]
         ]
 
