@@ -12,13 +12,16 @@ def analyze_sentiment(articles):
         return "No news articles available for sentiment analysis."
 
     for article in articles:
-        if isinstance(article, dict) and "content" in article:  # ✅ Check if article is a dictionary
-            content = article["content"] or ""  # ✅ Handle empty content safely
-        elif isinstance(article, str):  # ✅ If it's already a string, use it directly
-            content = article
+        if isinstance(article, dict):  
+            content = article.get("content") or article.get("title", "")  # ✅ Use title if content is missing
+        elif isinstance(article, str):  
+            content = article  # ✅ If it's a string, use it directly
         else:
             continue  # Skip invalid articles
         
+        if not content.strip():  # ✅ Skip empty strings
+            continue  
+
         analysis = TextBlob(content)
         total_polarity += analysis.sentiment.polarity
         total_subjectivity += analysis.sentiment.subjectivity
