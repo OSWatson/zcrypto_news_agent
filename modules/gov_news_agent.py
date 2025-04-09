@@ -49,6 +49,28 @@ def fetch_regulations_gov_news(api_key, query="crypto", page_size=10):
         print(f"Error fetching data: {e}")
         return []
 
+def get_top_five_articles(api_key):
+    """
+    Fetch and display the top five government articles related to cryptocurrency.
+    """
+    # Fetch articles using the existing function
+    articles = fetch_regulations_gov_news(api_key, page_size=5)
+
+    if not articles:
+        print("No articles found.")
+        return "No articles found."
+
+    # Format and display the top five articles
+    response = "Top Five Government Articles:\n"
+    for i, article in enumerate(articles, start=1):
+        response += f"{i}. {article['title']}\n"
+        response += f"   Type: {article['document_type']}\n"
+        response += f"   Posted Date: {article['posted_date']}\n"
+        response += f"   Docket ID: {article['docket_id']}\n"
+        response += f"   URL: {article['url']}\n\n"
+
+    return response
+
 if __name__ == "__main__":
     # Load API key from .env file
     API_KEY = os.getenv("REGULATIONS_GOV_API_KEY")
@@ -56,5 +78,6 @@ if __name__ == "__main__":
     if not API_KEY:
         print("Please set your Regulations.gov API key in the .env file.")
     else:
-        news = fetch_regulations_gov_news(API_KEY)
-        print(json.dumps(news, indent=2))
+        # Fetch and print the top five articles
+        top_articles = get_top_five_articles(API_KEY)
+        print(top_articles)

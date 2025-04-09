@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from modules.gov_news_agent import fetch_regulations_gov_news  # ✅ Updated source
+from modules.fetch_news import fetch_news
+from modules.sentiment import analyze_sentiment
 
 load_dotenv()
 
@@ -149,3 +151,55 @@ def display_crypto_graph(ticker: str, days: int = 365):
             st.subheader("🔹 News Impact (Right)")
             for article in article_list[mid_point:]:  # Second half of articles
                 st.markdown(article)
+
+def run_module_ui(existing_tabs, all_tab_objects):
+    # Display content for each new module tab
+    for i, file in enumerate(module_files, start=len(existing_tabs)):
+        with all_tab_objects[i]:
+            st.subheader(f"Agent for {file}")
+            
+            if f"{file}_messages" not in st.session_state:
+                st.session_state[f"{file}_messages"] = []
+
+            for msg in st.session_state[f"{file}_messages"]:
+                st.chat_message(msg["role"]).markdown(msg["content"])
+
+            user_input = st.chat_input(f"Ask the {file} agent...")
+            if user_input:
+                st.session_state[f"{file}_messages"].append({"role": "user", "content": user_input})
+                st.chat_message("user").markdown(user_input)
+
+                # Specific logic for sentiment.py
+                if file == 'sentiment.py':
+                    try:
+                        # Simulate asking the fetch_news agent
+                        articles = fetch_news()
+                        if not articles:
+                            response = "No articles available for sentiment analysis."
+                        else:
+                            words = user_input.split()
+                            num_articles = next((int(word) for word in words if word.isdigit()), len(articles))
+
+                            # Select articles based on user input
+                            selected_articles = articles[:num_articles]
+
+                            # Display selected articles
+                            st.subheader("Selected Articles for Sentiment Analysis")
+                            for article in selected_articles:
+                                st.markdown(f"**{article['title']}**: {article.get('content', 'No content available')}")
+
+                            # Perform sentiment analysis
+                            sentiments = [analyze_sentiment(article.get('content', '')) for article in selected_articles]
+                            response = "Sentiment Analysis Results:\n" + "\n".join([f"- {article['title']}: {sentiment}" for article, sentiment in zip(selected_articles, sentiments)])
+                            
+                            # Display sentiment analysis results
+                            st.subheader("Sentiment Analysis Results")
+                            st.markdown(response)
+                    except Exception as e:
+                        response = f"Could not perform sentiment analysis. Error: {str(e)}"
+                else:
+                    # Default response logic
+                    response = f"The {file} agent received your question: {user_input}"
+
+                st.session_state[f"{file}_messages"].append({"role": "assistant", "content": response})
+                st.chat_message("assistant").markdown(response)
