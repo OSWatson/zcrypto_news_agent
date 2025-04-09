@@ -1,120 +1,153 @@
-📢 zCrypto News Agent - AI-Powered Cryptocurrency News & Analysis
-🚀 zCrypto News Agent is an AI-powered application designed to fetch, analyze, and summarize the latest cryptocurrency news using LangChain and OpenAI. It integrates multiple agents to provide both local and real-time web-based insights into cryptocurrency trends.
+# 📢 zCrypto News Agent - AI-Powered Cryptocurrency News & Analysis
 
-📌 Features
-🔹 News Fetching & Sentiment Analysis
+🚀 **zCrypto News Agent** is a modular AI-powered Streamlit app that fetches, analyzes, and summarizes cryptocurrency news, prices, and government regulation documents using a system of intelligent agents. Powered by OpenAI, LangChain, and real-time APIs, it helps you stay informed about crypto market trends.
 
-Retrieves cryptocurrency news articles from NewsAPI.
-Performs sentiment analysis on articles to determine market sentiment.
-Displays news headlines, content summaries, and sentiment scores in a Streamlit dashboard.
-🔹 Local AI Chatbot (LangChain)
+---
 
-Uses OpenAI GPT-4 to answer questions based on locally stored news articles.
-Implements FAISS vector search for efficient article retrieval.
-🔹 Real-Time Web Search Agent
+## 📌 Features
 
-Uses SerpAPI to retrieve the latest web-based cryptocurrency news.
-Enhances responses by combining real-time web search with AI-based analysis.
-🔹 Multi-Agent System
+### 🔹 News Fetching & Sentiment Analysis
+- Retrieves cryptocurrency news from **NewsAPI**
+- Retrieves government regulation documents from **Regulations.gov**
+- Analyzes overall market sentiment using **TextBlob**
+- Highlights positivity, negativity, and subjectivity of news
 
-Combines local news retrieval and real-time web search into a single agent.
-Determines whether to use stored news or conduct a live web search based on the query.
-🛠️ Installation
-1️⃣ Clone the Repository
-sh
-Copy
-Edit
+### 💬 Local AI Chatbot (LangChain)
+- Powered by **OpenAI GPT-4** for contextual responses
+- Utilizes **FAISS** vector search to ground answers in real documents
+- Understands queries like “What is the sentiment for Bitcoin today?”
+
+### 🌐 Government News Agent
+- Uses `gov_news_agent.py` to fetch regulatory documents related to crypto
+- Integrated into sentiment analysis when appropriate
+
+### 📉 Price & Graph Agent
+- Uses `PriceAgent` to retrieve current crypto prices
+- Supports dynamic graph generation via Streamlit (e.g., BTC-USD trends)
+
+### 🤖 Multi-Agent System (In Progress)
+- Plans to intelligently route queries to the right agent
+- Handles compound requests (e.g., “Give me a chart and summary of Bitcoin sentiment”)
+
+---
+
+## 🛠️ Installation
+
+### 1️⃣ Clone the Repository
+```bash
 git clone https://github.com/YOUR_USERNAME/zcrypto_news_agent.git
 cd zcrypto_news_agent
 2️⃣ Create a Virtual Environment
-sh
+bash
 Copy
 Edit
 python -m venv venv
-source venv/bin/activate  # Mac/Linux
-venv\Scripts\activate     # Windows
+# Then activate it:
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
 3️⃣ Install Dependencies
-sh
+bash
 Copy
 Edit
 pip install -r requirements.txt
 4️⃣ Set Up API Keys
-Create a .env file in the project root and add your API keys:
+Create a .env file in the root directory:
 
-ini
+env
 Copy
 Edit
 OPENAI_API_KEY=your_openai_api_key
 NEWSAPI_API_KEY=your_newsapi_key
-SERPAPI_API_KEY=your_serpapi_key
-⚠️ Ensure the .env file is listed in .gitignore to keep your keys secure!
+REGULATIONS_GOV_API_KEY=your_regulations_api_key
+✅ Ensure .env is listed in .gitignore
 
-🚀 Running the Application
-Start the Streamlit dashboard:
-
-sh
+🚀 Running the App
+bash
 Copy
 Edit
 streamlit run app/dashboard.py
-The app will be accessible at http://localhost:8501.
+Visit http://localhost:8501 in your browser.
 
 📂 Project Structure
 bash
 Copy
 Edit
 zcrypto_news_agent/
-│── app/
-│   ├── dashboard.py       # Streamlit UI for news and chatbot
-│
+├── app/
+│   └── dashboard.py         # Main Streamlit UI
 ├── config/
-│   ├── settings.py        # Configuration settings
-│
+│   └── settings.py          # API keys and source URLs
 ├── data/
-│   ├── articles.json      # Locally stored crypto news articles
-│
+│   └── articles.json        # Locally cached articles
 ├── logs/
-│   ├── app.log            # Log file for debugging
-│
+│   └── app.log              # Debug logs
 ├── modules/
-│   ├── fetch_news.py      # Fetches news from NewsAPI
-│   ├── sentiment.py       # Sentiment analysis module
-│   ├── langchain_agent.py # Local AI chatbot using LangChain
-│   ├── web_search_agent.py # Real-time web search agent (SerpAPI)
-│   ├── multi_agent.py     # Multi-agent combining local & web search
-│
-├── .env                   # API keys (not pushed to GitHub)
-├── .gitignore             # Excludes `.env` file from Git tracking
-├── README.md              # Project documentation
-├── requirements.txt       # Required dependencies
+│   ├── fetch_news.py        # Fetches general news
+│   ├── gov_news_agent.py    # Fetches government news
+│   ├── sentiment.py         # Performs sentiment analysis
+│   ├── price_agent.py       # Crypto price retrieval
+│   ├── langchain_agent.py   # LangChain + FAISS local chatbot
+│   ├── ai_agent.py          # Query interpreter + router
+│   ├── summarizer.py        # Article summarization
+│   └── ... (other agents)
+├── .env                     # 🔒 API credentials (excluded from Git)
+├── .env.example             # Safe template for others
+├── .gitignore               # Prevents key leaks
+├── requirements.txt         # Dependencies
+└── README.md                # This file
 🧠 How It Works
-1️⃣ Fetching Crypto News & Sentiment Analysis
-The fetch_news.py script pulls articles from NewsAPI.
-The sentiment.py script analyzes the tone of each article (positive, neutral, negative).
-The news and sentiment scores are displayed in the Streamlit dashboard.
-2️⃣ Local AI Chatbot (LangChain)
-Uses GPT-4 to answer questions based on stored news articles.
-Implements FAISS vector search for efficient retrieval.
-Handles direct user queries related to recent cryptocurrency news.
-3️⃣ Real-Time Web Search Agent
-Uses SerpAPI to perform live web searches for crypto news.
-Returns real-time results when local news articles are insufficient.
-4️⃣ Multi-Agent System
-Integrates local news retrieval and real-time web search.
-Automatically determines whether to fetch stored articles or perform a live search.
-🔒 Security Considerations
-✅ .env File
+📰 News + Sentiment
+fetch_news.py pulls crypto articles
 
-📌 Future Enhancements
-✅ Integration with Blockchain APIs
-✅ Predictive Sentiment Analysis
-✅ Crypto Price Trend Visualization
+sentiment.py analyzes tone: Positive, Neutral, Negative
+
+🏛️ Gov News + Analysis
+gov_news_agent.py pulls documents from Regulations.gov
+
+Can optionally pass these into the sentiment pipeline
+
+💬 Local AI Agent
+ai_agent.py listens for keywords (e.g., "sentiment", "price", "chart")
+
+Routes to the appropriate module
+
+Supports compound queries (e.g., “Show me the price and sentiment of Bitcoin”)
+
+📈 Graph Generation
+Uses graph_viz.py to show historical charts for coins
+
+🔒 Security Notes
+Never commit .env files with real API keys
+
+Use .env.example to share expected keys with collaborators
+
+🧪 Example Queries to Try
+“What is the current sentiment for Bitcoin?”
+
+“Show me the latest government crypto documents”
+
+“Give me the sentiment of the top 5 crypto articles”
+
+“What’s the price of Ethereum?”
+
+“Display a graph of Bitcoin over the last 90 days”
+
+✅ Future Enhancements
+🔁 Real-time news refresh scheduler
+
+📊 Deeper NLP for emotion and entity tracking
+
+🔗 Blockchain API integration (on-chain metrics)
+
+🤹 Streamlit chatbot memory across sessions
 
 💡 Contributing
-🚀 Contributions are welcome!
+Pull requests are welcome!
 
 Fork the repo
-Create a new branch
-Submit a pull request
-📄 License
-This project is licensed under the MIT License.
 
+Create a feature branch
+
+Submit a PR with a clear description
